@@ -1,0 +1,135 @@
+<html manifest="saugsummit.manifest">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,height=device-height">
+    <meta http-equiv="x-ua-compatible" content="IE=8" /> <!--IE JSON Issue-->
+    <title>SAUG Summit 2011</title> 
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/latest/jquery.mobile.min.css" />  
+    <link rel="apple-touch-icon" href="icon.png" />
+    <script src="http://code.jquery.com/jquery.min.js"></script>
+    <script src="http://code.jquery.com/mobile/latest/jquery.mobile.min.js"></script>
+    <script src="http://svn.apache.org/repos/asf/couchdb/trunk/share/www/script/jquery.couch.js"></script>
+  </head>
+  <body>
+    <div data-role="page">
+      <div data-role="header" id="header" data-position="inline" data-theme="b">
+        <img src="12798_SAUG_EDM_Header_WEB.JPG"/>
+        <div data-role="navbar" id="navbar">
+          <ul>
+            <li><a id="Day1" onClick="getSessionByDate('Day 1 (02 Aug 2011)')">Day 1</a></li>
+            <li><a id="Day2" onClick="getSessionByDate('Day 2 (03 Aug 2011)')">Day 2</a></li>
+            <li><a id="Day3" onClick="getSessionByDate('Day 3 (04 Aug 2011)')">Day 3</a></li>
+          </ul>
+        </div>
+      </div>
+      <div data-role="content" data-theme="b">
+        <div id="loading"><p>Session Data Loading...</p></div>
+        <ul id="sessions" data-role="listview"></ul>
+      </div>
+      <div data-role="footer" data-theme="b">
+        <a href="#about" data-icon="gear" class="ui-btn-left" data-rel="dialog" data-transition="pop">About</a>
+      </div>
+    </div>
+    <div data-role="page" id="about">
+      <div data-role="header" id="header" data-position="inline" data-theme="b">
+        <h1>About</h1>
+      </div>
+      <div data-role="content" data-theme="b">
+        <p>Built by Acclimation Pty Ltd</p>
+	   <p>Powered by Couchbase</p>
+	   <p>Hosted by Iris Couch</p><br>
+	   <p>CouchDB has started. Time to relax...</p>
+      </div>
+    </div>
+  </body>
+
+<script type="text/javascript">
+
+  $db = $.couch.db("saugsummit2011");
+  currentDayKey = "";
+  
+  function getSessionByDate(dayKey){
+
+    //Guard
+    if(currentDayKey == dayKey){return;}
+  
+    $db.view("app/byDate",{
+    
+          key: dayKey,
+
+      success: function(data){
+        $("#sessions").empty();
+        var listItems = "";
+  
+        data.rows.sort(function(a,b){
+          return a.value.session.sortTime - b.value.session.sortTime;
+        });
+
+
+        var timeGroup = "";
+
+//        IE Doesn't support forEach
+//        data.rows.forEach(function(row){
+        for(var i=0;i<data.rows.length;i++){  
+      
+          if(timeGroup != data.rows[i].value.session.formattedTime){
+            listItems = listItems + '<li data-role="list-divider">' + data.rows[i].value.session.formattedTime + '</li>';
+            timeGroup = data.rows[i].value.session.formattedTime;
+          }
+          
+          var href = "_show/showSessionDetail/" + data.rows[i].value._id;
+          if(data.rows[i].value.session.sessionDetail){
+            listItems = listItems + '<li><a href="' + href + '">';
+          } else {
+            listItems = listItems + '<li>';
+          }
+          
+          listItems = listItems + '<p style="white-space:normal"><strong>' + data.rows[i].value.session.sessionName + '</strong></p>';
+
+          if (data.rows[i].value.session.presenters){
+//            IE Doesn't support forEach          
+//            data.rows[i].value.session.presenters.forEach(function(presenter){
+            for(var j=0;j<data.rows[i].value.session.presenters.length;j++){
+              listItems = listItems + '<p style="white-space:normal">' + data.rows[i].value.session.presenters[j] + '</p>';
+            }
+            //);
+          }
+
+//          listItems = listItems + '<p class="ui-li-aside">' + row.value.session.sessionType  + '</p>';
+          if(data.rows[i].value.session.sessionDetail){
+            listItems = listItems + '</a></li>';
+          } else {
+            listItems = listItems + '</li>';
+          }
+          
+        }
+        //);
+        
+        //FIX for JQM Issue where hover class is included
+        if (currentDayKey == "") {      
+          $("#Day1").removeClass("ui-btn-hover-b");
+          $("#Day1").addClass("ui-btn-up-b");
+          $("#Day1").addClass("ui-btn-active");      
+        }
+              
+        $("#sessions").append(listItems);
+        $("#sessions").listview('refresh');        
+        currentDayKey = dayKey;
+        setTimeout(scrollTo, 0, 0, 1);
+      }
+    });
+  }
+     
+  $('#loading')
+      .hide()  // hide it initially
+      .ajaxStart(function() {
+        $(this).show();
+      })
+      .ajaxStop(function() {
+        $(this).hide();
+      });
+    
+  getSessionByDate('Day 1 (02 Aug 2011)');
+  
+</script>
+</html>
