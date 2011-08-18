@@ -102,9 +102,19 @@ ddoc.shows.showSessionDetail = function(doc,res){
     
     html = html + '</ul>';
   }
+  
+  if (doc.session.location){
+    html = html + '<p><strong>Location: </strong>' + doc.session.location + '</p>';
+  }
+  
+  if (doc.session.duration){
+    html = html + '<p><strong>Duration: </strong>' + doc.session.duration + '</p>';
+  }
 
 //  html = html + '<p>Details:</p>';
-  html = html + doc.session.sessionDetail;
+  if (doc.session.sessionDetail){
+    html = html + doc.session.sessionDetail;
+  }
   
   html = html + '</div></div>';
             

@@ -1,4 +1,4 @@
-<html manifest="saugsummit.manifest">
+<html>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,height=device-height">
@@ -78,11 +78,11 @@
           }
           
           var href = "_show/showSessionDetail/" + data.rows[i].value._id;
-          if(data.rows[i].value.session.sessionDetail){
+//          if(data.rows[i].value.session.sessionDetail){
             listItems = listItems + '<li><a href="' + href + '">';
-          } else {
-            listItems = listItems + '<li>';
-          }
+//          } else {
+//            listItems = listItems + '<li>';
+//          }
           
           listItems = listItems + '<p style="white-space:normal"><strong>' + data.rows[i].value.session.sessionName + '</strong></p>';
 
@@ -96,20 +96,20 @@
           }
 
 //          listItems = listItems + '<p class="ui-li-aside">' + row.value.session.sessionType  + '</p>';
-          if(data.rows[i].value.session.sessionDetail){
+//          if(data.rows[i].value.session.sessionDetail){
             listItems = listItems + '</a></li>';
-          } else {
-            listItems = listItems + '</li>';
-          }
+//          } else {
+//            listItems = listItems + '</li>';
+//          }
           
         }
         //);
         
-        //FIX for JQM Issue where hover class is included
+        //FIX for JQM Issue where hover class is included on first Nav Button
         if (currentDayKey == "") {      
           $("#Day1").removeClass("ui-btn-hover-b");
           $("#Day1").addClass("ui-btn-up-b");
-          $("#Day1").addClass("ui-btn-active");      
+          $("#Day3").addClass("ui-btn-active");      
         }
               
         $("#sessions").append(listItems);
@@ -129,7 +129,7 @@
         $(this).hide();
       });
     
-  getSessionByDate('Day 1 (02 Aug 2011)');
+  getSessionByDate('Day 3 (04 Aug 2011)');
   
 </script>
 </html>
